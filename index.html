@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Peta Sebaran Warga</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      #map {
+        width: 100%;
+        height: 100vh;
+      }
+
+      .popup-card {
+        width: 320px;
+      }
+
+      .popup-card h3 {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
+      .slider {
+        position: relative;
+      }
+
+      .slider img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+
+      .btn-slide {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .prev {
+        left: 10px;
+      }
+
+      .next {
+        right: 10px;
+      }
+
+      .info-table {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .info-table td {
+        padding: 4px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+      const dataWarga = [
+        {
+          id: 1,
+          nama: "BUSMADI",
+          umur: 43,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121802110002",
+          kk: "7602120101830004",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764252,
+          lng: 118.845805,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 2,
+          nama: "GANI",
+          umur: 49,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121304110002",
+          kk: "7602120805770001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.765393,
+          lng: 118.84029,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 3,
+          nama: "HAMMA ALI K",
+          umur: 46,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121902080004",
+          kk: "7602122103800001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764463,
+          lng: 118.844546,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 4,
+          nama: "JAMALI P",
+          umur: 68,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121406080003",
+          kk: "7602122208580001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.765354,
+          lng: 118.842556,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 5,
+          nama: "SUDIANTO",
+          umur: 38,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121107120011",
+          kk: "7602121105880002",
+          alamat: "Dusun Salukalo",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.765923,
+          lng: 118.837429,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 6,
+          nama: "TABAKI",
+          umur: 55,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602122503070023",
+          kk: "7602120107710001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764616,
+          lng: 118.843727,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 7,
+          nama: "TALISU",
+          umur: 56,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602120202080006",
+          kk: "7602123110700001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764808,
+          lng: 118.845189,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 8,
+          nama: "TAABU",
+          umur: 59,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602120705070026",
+          kk: "7602121908670001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764683,
+          lng: 118.843183,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 9,
+          nama: "TAPERO",
+          umur: 54,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602122503070024",
+          kk: "7602121407720001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.76546,
+          lng: 118.839483,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 10,
+          nama: "MASDAR",
+          umur: 47,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602122205120003",
+          kk: "7602123108790002",
+          alamat: "Dusun Punaga",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.758877,
+          lng: 118.814814,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 11,
+          nama: "BOJO",
+          umur: 78,
+          jenis_kelamin: "P",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602122008080007",
+          kk: "7602127112480026",
+          alamat: "Dusun Punaga",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.750114,
+          lng: 118.813774,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 12,
+          nama: "TAPIA",
+          umur: 78,
+          jenis_kelamin: "P",
+          pekerjaan: "MENGURUS RUMAH TANGGA",
+          nik: "7602122306220003",
+          kk: "7602127112480044",
+          alamat: "Dusun Pasada",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.752391,
+          lng: 118.855795,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 13,
+          nama: "JUHAENI",
+          umur: 55,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602122703090002",
+          kk: "7602121901710001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764553,
+          lng: 118.842753,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 14,
+          nama: "RASIA",
+          umur: 61,
+          jenis_kelamin: "P",
+          pekerjaan: "MENGURUS RUMAH TANGGA",
+          nik: "7602122505220002",
+          kk: "7602127112650024",
+          alamat: "Dusun Salukalo",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.765939,
+          lng: 118.836837,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 15,
+          nama: "TALAM BUSANG S",
+          umur: 79,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602120202080008",
+          kk: "7602123112470011",
+          alamat: "Dusun Salukalo",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.763986,
+          lng: 118.846081,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 16,
+          nama: "TAPANDA",
+          umur: 89,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121703080036",
+          kk: "7602123112370006",
+          alamat: "Dusun Tande-Tande",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.772038,
+          lng: 118.827896,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 17,
+          nama: "RATNA SARI",
+          umur: 33,
+          jenis_kelamin: "P",
+          pekerjaan: "MENGURUS RUMAH TANGGA",
+          nik: "7602121505170003",
+          kk: "7602125205930001",
+          alamat: "Dusun Tande-Tande",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.770974,
+          lng: 118.828971,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 18,
+          nama: "BUDI",
+          umur: 48,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121703080012",
+          kk: "7602121602780001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.765944,
+          lng: 118.83714,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 19,
+          nama: "DG PASULA",
+          umur: 54,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121902080008",
+          kk: "7602123112720046",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764858,
+          lng: 118.842759,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 20,
+          nama: "SAING S",
+          umur: 53,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602120104090018",
+          kk: "7602121603730001",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.765369,
+          lng: 118.839944,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 21,
+          nama: "ICCI GALUNG",
+          umur: 66,
+          jenis_kelamin: "P",
+          pekerjaan: "MENGURUS RUMAH TANGGA",
+          nik: "7602121505180004",
+          kk: "7602127112600033",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.7637,
+          lng: 118.847078,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 22,
+          nama: "HAISA",
+          umur: 69,
+          jenis_kelamin: "P",
+          pekerjaan: "MENGURUS RUMAH TANGGA",
+          nik: "7602121401090003",
+          kk: "7604127112570030",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764483,
+          lng: 118.842858,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 23,
+          nama: "NASIR",
+          umur: 59,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602122906080045",
+          kk: "7602123112670036",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.765475,
+          lng: 118.840472,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 24,
+          nama: "NURLIA",
+          umur: 56,
+          jenis_kelamin: "P",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602124205700001",
+          kk: "7602121506080025",
+          alamat: "Dusun Tande-Tande",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.771941,
+          lng: 118.825384,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 25,
+          nama: "PATU",
+          umur: 82,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121703080038",
+          kk: "7602122106440001",
+          alamat: "Dusun Tande-Tande",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.772004,
+          lng: 118.826563,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 26,
+          nama: "RASIA",
+          umur: 43,
+          jenis_kelamin: "P",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602120508080018",
+          kk: "7602127112830050",
+          alamat: "Dusun Sendana",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.751112,
+          lng: 118.855353,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 27,
+          nama: "TASIA",
+          umur: 56,
+          jenis_kelamin: "P",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602121603080026",
+          kk: "7602125704600001",
+          alamat: "Dusun Tande-Tande",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.771902,
+          lng: 118.826027,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 28,
+          nama: "TAECO",
+          umur: 81,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602122906080014",
+          kk: "7602123112450027",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.7645,
+          lng: 118.845222,
+          photos: ["img/default.jpg"],
+        },
+        {
+          id: 29,
+          nama: "BASRI",
+          umur: 45,
+          jenis_kelamin: "L",
+          pekerjaan: "PETANI/PEKEBUN",
+          nik: "7602122906080024",
+          kk: "7602123112710036",
+          alamat: "Dusun Salurumbia",
+          desa: "BOTTENG UTARA",
+          kecamatan: "SIMBORO DAN KEPULAUAN",
+          kabupaten: "MAMUJU",
+          lat: -2.764553,
+          lng: 118.844311,
+          photos: ["img/default.jpg"],
+        },
+      ];
+
+      const map = L.map("map").setView([-2.764252, 118.845805], 14);
+
+      // OpenStreetMap
+      const osm = L.tileLayer(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap",
+        }
+      );
+
+      // Esri Satellite
+      const satellite = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+          attribution: "Tiles &copy; Esri",
+        }
+      );
+
+      // OpenTopoMap (Terrain)
+      const terrain = L.tileLayer(
+        "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        {
+          maxZoom: 17,
+          attribution: "&copy; OpenTopoMap",
+        }
+      );
+
+      // Default layer
+      satellite.addTo(map);
+
+      // Layer Control
+      const baseMaps = {
+        "🗺️ Street Map": osm,
+        "🛰️ Satellite": satellite,
+        "⛰️ Terrain": terrain,
+      };
+
+      L.control.layers(baseMaps).addTo(map);
+
+      const galleryState = {};
+
+      dataWarga.forEach((item) => {
+        galleryState[item.id] = {
+          index: 0,
+          photos: item.photos,
+        };
+
+        const popup = `
+      <div class="popup-card">
+
+      <div class="slider">
+
+      <img
+      id="img-${item.id}"
+      src="${item.photos[0]}"
+      >
+
+      <button
+      class="btn-slide prev"
+      onclick="prevImage(${item.id})">
+      ❮
+      </button>
+
+      <button
+      class="btn-slide next"
+      onclick="nextImage(${item.id})">
+      ❯
+      </button>
+
+      </div>
+
+      <h3>${item.nama}</h3>
+
+      <table class="info-table">
+      <tr>
+      <td><b>NIK</b></td>
+      <td>${item.nik}</td>
+      </tr>
+
+      <tr>
+      <td><b>No KK</b></td>
+      <td>${item.kk}</td>
+      </tr>
+      </table>
+
+      </div>
+      `;
+
+        L.marker([item.lat, item.lng]).addTo(map).bindPopup(popup);
+      });
+
+      function nextImage(id) {
+        let data = galleryState[id];
+
+        data.index++;
+
+        if (data.index >= data.photos.length) {
+          data.index = 0;
+        }
+
+        document.getElementById(`img-${id}`).src = data.photos[data.index];
+      }
+
+      function prevImage(id) {
+        let data = galleryState[id];
+
+        data.index--;
+
+        if (data.index < 0) {
+          data.index = data.photos.length - 1;
+        }
+
+        document.getElementById(`img-${id}`).src = data.photos[data.index];
+      }
+    </script>
+  </body>
+</html>
