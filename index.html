@@ -10,6 +10,10 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.css"
+    />
 
     <style>
       * {
@@ -83,6 +87,7 @@
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.polylinemeasure/Leaflet.PolylineMeasure.js"></script>
 
     <script>
       const dataWarga = [
@@ -420,7 +425,10 @@
           kabupaten: "MAMUJU",
           lat: -2.7637,
           lng: 118.847078,
-          photos: ["img/default.jpg"],
+          photos: [
+            "img/icci-galung/depan.jpeg",
+            "img/icci-galung/perspektif.jpeg",
+          ],
         },
         {
           id: 22,
@@ -487,22 +495,6 @@
           photos: ["img/default.jpg"],
         },
         {
-          id: 26,
-          nama: "RASIA",
-          umur: 43,
-          jenis_kelamin: "P",
-          pekerjaan: "PETANI/PEKEBUN",
-          nik: "7602120508080018",
-          kk: "7602127112830050",
-          alamat: "Dusun Sendana",
-          desa: "BOTTENG UTARA",
-          kecamatan: "SIMBORO DAN KEPULAUAN",
-          kabupaten: "MAMUJU",
-          lat: -2.751112,
-          lng: 118.855353,
-          photos: ["img/default.jpg"],
-        },
-        {
           id: 27,
           nama: "TASIA",
           umur: 56,
@@ -552,7 +544,45 @@
         },
       ];
 
+      const dataToko = [
+        {
+          id: 1,
+          nama: "Toko Bangunan Putra Tande 5 Tapalang",
+          lat: -2.8651950394293317,
+          lng: 118.8702681999993,
+        },
+        {
+          id: 2,
+          nama: "Toko Multi Bangunan",
+          lat: -2.686109461341232,
+          lng: 118.87689565767191,
+        },
+        {
+          id: 3,
+          nama: "Toko Fajar Bangunan - Mamuju",
+          lat: -2.6892781319211956,
+          lng: 118.87733867116405,
+        },
+        {
+          id: 4,
+          nama: "Toko Delta Bangunan",
+          lat: -2.687523331859546,
+          lng: 118.87785353101715,
+        },
+      ];
       const map = L.map("map").setView([-2.764252, 118.845805], 14);
+
+      // Pengukuran jarak
+      L.control
+        .polylineMeasure({
+          position: "topleft",
+          unit: "metres",
+          showBearings: false,
+          clearMeasurementsOnStop: false,
+          showClearControl: true,
+          showUnitControl: true,
+        })
+        .addTo(map);
 
       // OpenStreetMap
       const osm = L.tileLayer(
@@ -591,6 +621,36 @@
       };
 
       L.control.layers(baseMaps).addTo(map);
+
+      // Data Tokok
+      const tokoIcon = new L.Icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      });
+
+      const tokoLayer = L.layerGroup().addTo(map);
+
+      dataToko.forEach((toko) => {
+        L.marker([toko.lat, toko.lng], {
+          icon: tokoIcon,
+        })
+          .bindPopup(
+            `
+      <div class="popup-card">
+        <h3>🏪 ${toko.nama}</h3>
+        <p>Toko Bangunan</p>
+      </div>
+    `
+          )
+          .addTo(tokoLayer);
+      });
 
       const galleryState = {};
 
